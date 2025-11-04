@@ -34,7 +34,7 @@ import GlobalConfig from "@/global-config";
 import { SwitchLang } from "@/view/navbar";
 import { Theme } from "@/view/theme";
 import { HistoryList } from "@view/history";
-import Logo from "../../../public/logo.svg";
+import Logo from "../../../public/aiAvatar.svg";
 </script>
 
 <style scoped lang="scss">

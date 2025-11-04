@@ -3,5 +3,5 @@
 </template>
 
 <script setup lang="ts">
-import Logo from "../../../public/logo.svg";
+import Logo from "../../../public/aiAvatar.svg";
 </script>

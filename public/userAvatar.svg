@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" version="1.1">
+  <defs>
+    <linearGradient id="gold_main" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#FFE26A"/>
+      <stop offset="40%" stop-color="#FFD23C"/>
+      <stop offset="100%" stop-color="#E0A800"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="50%" cy="35%" r="50%">
+      <stop offset="0%" stop-color="#FFF6B3" stop-opacity="0.8"/>
+      <stop offset="70%" stop-color="#FFD700" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#FFD700" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="12" result="b" />
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- transparent background -->
+  <rect width="100%" height="100%" fill="none"/>
+
+  <!-- halo glow -->
+  <ellipse cx="512" cy="260" rx="320" ry="200" fill="url(#halo)" opacity="0.85"/>
+
+  <!-- head -->
+  <g transform="translate(180,140)">
+    <rect x="160" y="60" rx="160" ry="160" width="560" height="480" fill="url(#gold_main)" filter="url(#glow)"/>
+    <!-- face contour -->
+    <path d="M300 260 q100 180 240 0" fill="#FEEFC2" opacity="0.7"/>
+    <circle cx="512" cy="260" r="160" fill="url(#gold_main)" opacity="0.9"/>
+    <!-- eyes -->
+    <ellipse cx="440" cy="260" rx="28" ry="24" fill="#FFFDE1"/>
+    <ellipse cx="584" cy="260" rx="28" ry="24" fill="#FFFDE1"/>
+    <!-- smile -->
+    <path d="M440 320 q72 42 144 0" stroke="#FFF4A3" stroke-width="10" stroke-linecap="round" fill="none" opacity="0.9"/>
+    <!-- forehead shine -->
+    <ellipse cx="512" cy="180" rx="80" ry="36" fill="#FFFFFF" opacity="0.25"/>
+  </g>
+
+  <!-- torso with badge -->
+  <g transform="translate(200,540)">
+    <rect x="100" y="0" rx="120" ry="120" width="680" height="340" fill="url(#gold_main)" filter="url(#glow)"/>
+    <!-- weather badge -->
+    <g transform="translate(360,90)" opacity="0.98">
+      <path d="M80 40 a40 40 0 0 1 80 0 a56 56 0 0 1 112 16 a40 40 0 0 1 -8 78 H48 a48 48 0 0 1 -8 -96" fill="#FFF7C0" opacity="0.95"/>
+      <path d="M160 150 L120 150 L140 200 L100 200 L180 340 L160 210 L200 210 Z" fill="#FFD700" transform="translate(-60,-50) scale(0.45)"/>
+    </g>
+  </g>
+</svg>

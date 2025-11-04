@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" version="1.1">
+  <defs>
+    <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#00C2FF"/>
+      <stop offset="100%" stop-color="#0057C7"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="35%" r="50%">
+      <stop offset="0%" stop-color="#2CE0FF" stop-opacity="0.85"/>
+      <stop offset="60%" stop-color="#0070D1" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#0070D1" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="12" result="b" />
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- transparent background -->
+  <rect width="100%" height="100%" fill="none"/>
+
+  <!-- glow -->
+  <ellipse cx="512" cy="280" rx="300" ry="200" fill="url(#glow)" />
+
+  <!-- head -->
+  <g transform="translate(160,110)">
+    <rect x="128" y="40" rx="160" ry="160" width="576" height="512" fill="url(#g1)" filter="url(#soft)"/>
+    <!-- inner visor -->
+    <rect x="208" y="140" rx="120" ry="120" width="432" height="260" fill="#02233a" opacity="0.92"/>
+    <!-- eyes -->
+    <rect x="300" y="200" rx="36" ry="36" width="86" height="116" fill="#34F0FF"/>
+    <rect x="496" y="200" rx="36" ry="36" width="86" height="116" fill="#34F0FF"/>
+    <!-- smile -->
+    <path d="M360 320 q72 60 152 0" stroke="#36E6FF" stroke-width="18" stroke-linecap="round" fill="none" opacity="0.95"/>
+
+    <!-- antenna -->
+    <rect x="468" y="-36" width="28" height="96" rx="12" fill="url(#g1)"/>
+    <circle cx="482" cy="-40" r="44" fill="#18B9FF"/>
+  </g>
+
+  <!-- torso with cloud+lightning -->
+  <g transform="translate(192,520)">
+    <rect x="80" y="0" rx="120" ry="120" width="672" height="360" fill="url(#g1)" filter="url(#soft)"/>
+    <!-- cloud -->
+    <g transform="translate(280,120)" opacity="0.98">
+      <path d="M80 40 a40 40 0 0 1 80 0 a56 56 0 0 1 112 16 a40 40 0 0 1 -8 78 H48 a48 48 0 0 1 -8 -96  " fill="#9FE6FF" opacity="0.95"/>
+      <!-- lightning -->
+      <path d="M180 110 L140 110 L160 170 L120 170 L200 300 L180 190 L220 190 Z" fill="#00C2FF" transform="translate(-60,-50) scale(0.55)"/>
+    </g>
+  </g>
+</svg>

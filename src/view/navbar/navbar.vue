@@ -32,7 +32,7 @@
 import GlobalConfig from "@/global-config";
 import { Theme } from "@/view/theme";
 import SwitchLang from "./switch-lang.vue";
-import Logo from "../../../public/logo.svg";
+import Logo from "../../../public/aiAvatar.svg";
 </script>
 
 <style scoped lang="scss">

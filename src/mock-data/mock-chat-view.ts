@@ -74,12 +74,12 @@ export const mockAnswer = {
 };
 
 export const customerAvatar: IMessageAvatar = {
-  imgSrc: 'https://matechat.gitcode.com/png/demo/userAvatar.svg',
+  imgSrc: '/userAvatar.svg',
   width: 32,
   height: 32,
 };
 export const aiModelAvatar: IMessageAvatar = {
-  imgSrc: 'https://matechat.gitcode.com/logo.svg',
+  imgSrc: '/aiAvatar.svg',
   width: 32,
   height: 32,
 };
