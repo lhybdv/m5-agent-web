@@ -10,7 +10,7 @@ import { ArcoResolver } from 'unplugin-vue-components/resolvers';
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: "/vue-starter",
+  base: "./",
   plugins: [
     vue(),
     vueJsx(),
