@@ -57,7 +57,11 @@ export const useChatMessageStore = defineStore("chat-message", () => {
       const apiBase = import.meta.env.VITE_API_BASE_URL || "";
       const resp = await fetch(`${apiBase}/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          Accept: "text/event-stream",
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache",
+        },
         body: JSON.stringify({
           input: content,
           model:
@@ -66,11 +70,72 @@ export const useChatMessageStore = defineStore("chat-message", () => {
         }),
       });
 
-      let answerText = "";
       if (!resp.ok) {
-        answerText = `请求失败：${resp.status} ${resp.statusText}`;
+        const assistantMsg = getLastMessage();
+        if (assistantMsg) {
+          assistantMsg.loading = false;
+          assistantMsg.content = `请求失败：${resp.status} ${resp.statusText}`;
+          assistantMsg.complete = true;
+        }
+        messageChangeCount.value++;
+        return;
+      }
+
+      const contentType = resp.headers.get("content-type") || "";
+      const isStream =
+        !!resp.body && (
+          contentType.includes("text/event-stream") ||
+          contentType.includes("application/x-ndjson") ||
+          contentType.includes("text/plain")
+        );
+
+      if (isStream && resp.body) {
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          const chunkText = decoder.decode(value, { stream: true });
+          buffer += chunkText;
+
+          // 解析 SSE 的 data: 行或 NDJSON 行
+          const parts = buffer.split(/\n\n|\r\n\r\n|\n|\r\n/);
+          // 保留最后一个可能未完整的片段在 buffer 中
+          buffer = parts.pop() || "";
+          for (const part of parts) {
+            let deltaText = "";
+            let deltaReason = "";
+            const trimmed = part.trim();
+            if (trimmed.startsWith("data:")) {
+              const dataPayload = trimmed.replace(/^data:\s*/, "").trim();
+              try {
+                const obj = JSON.parse(dataPayload);
+                deltaText = obj.content || obj.output || obj.answer || "";
+                deltaReason = obj.reasoning_content || obj.think || "";
+              } catch {
+                deltaText = dataPayload;
+              }
+            } else {
+              // NDJSON 或纯文本
+              try {
+                const obj = JSON.parse(trimmed);
+                deltaText = obj.content || obj.output || obj.answer || "";
+                deltaReason = obj.reasoning_content || obj.think || "";
+              } catch {
+                deltaText = trimmed;
+              }
+            }
+
+            if (deltaText || deltaReason) {
+              onMessageChange({ content: deltaText, reasoning_content: deltaReason });
+            }
+          }
+        }
+        onMessageComplete();
       } else {
-        const contentType = resp.headers.get("content-type") || "";
+        // 非流式，按原逻辑处理
+        let answerText = "";
         if (contentType.includes("application/json")) {
           try {
             const data = await resp.json();
@@ -83,21 +148,23 @@ export const useChatMessageStore = defineStore("chat-message", () => {
         } else {
           answerText = await resp.text();
         }
+
+        const assistantMsg = getLastMessage();
+        if (assistantMsg) {
+          assistantMsg.loading = false;
+          assistantMsg.content = answerText;
+          assistantMsg.complete = true;
+        }
+        messageChangeCount.value++;
       }
 
-      const assistantMsg = getLastMessage();
-      if (assistantMsg) {
-        assistantMsg.loading = false;
-        assistantMsg.content = answerText;
-        assistantMsg.complete = true;
-      }
+      // 写入历史
       chatHistoryStore.addHistory(
         chatStatusStore.currentChatId,
         dayjs().format("YYYY-MM-DD HH:mm"),
         messages.value,
         chatModelStore.currentModel
       );
-      messageChangeCount.value++;
     } catch (e) {
       const assistantMsg = getLastMessage();
       if (assistantMsg) {
