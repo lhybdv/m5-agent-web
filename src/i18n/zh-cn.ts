@@ -18,9 +18,9 @@ export default {
   welcome: {
     welcomeTo: "欢迎使用",
     description1:
-      "MateChat 可以辅助研发人员编码、查询知识和相关作业信息、编写文档等。",
+      "",
     description2:
-      "作为AI模型，MateChat 提供的答案可能不总是确定或准确的，但您的反馈可以帮助 MateChat 做的更好。",
+      "",
     guessYouWantAsk: "猜你想问",
     change: "换一批",
   },
