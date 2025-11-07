@@ -1,6 +1,7 @@
 import type { LLMModelsConfig } from "./types";
 import DeepSeekIcon from "../../public/deepseek-color.svg";
 import QwenIcon from "../../public/qwen.svg";
+import SiliconCloudIcon from "../../public/siliconcloud-color.svg";
 
 export const MODEL_CONFIGS = {
   stream: true,
@@ -19,25 +20,16 @@ export enum LLMClientKey {
 
 export const LLM_MODELS: LLMModelsConfig[] = [
   {
-    // 硅基流动
+    // 统一使用硅基流动聚合接口
     providerKey: LLMProviders.SILICON_FLOW,
     apiPath: "https://api.siliconflow.cn/v1",
     apiKey: "",
     models: [
-      { name: "deepseek-ai/DeepSeek-R1", iconPath: DeepSeekIcon },
-      { name: "Qwen/Qwen3-8B", iconPath: QwenIcon },
-    ],
-    available: true,
-    clientKey: LLMClientKey.openai,
-  },
-  {
-    // deepseek
-    providerKey: LLMProviders.DEEP_SEEK,
-    apiPath: "https://api.deepseek.com",
-    apiKey: "",
-    models: [
-      { name: "deepseek-chat", iconPath: DeepSeekIcon },
-      { name: "deepseek-reasoner", iconPath: DeepSeekIcon },
+      { name: "deepseekr1", iconPath: DeepSeekIcon },
+      { name: "chatglm-88b", iconPath: SiliconCloudIcon },
+      { name: "glm-4.5", iconPath: SiliconCloudIcon },
+      { name: "qwen3-30-fp8", iconPath: QwenIcon },
+      { name: "qwen3-30b", iconPath: QwenIcon },
     ],
     available: true,
     clientKey: LLMClientKey.openai,

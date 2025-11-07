@@ -1,6 +1,4 @@
 import { aiModelAvatar, customerAvatar } from "@/mock-data/mock-chat-view";
-import { Client, type LLMService } from "@/models";
-import { MODEL_CONFIGS } from "@/models/config";
 import type { IMessage } from "@/types";
 import dayjs from "dayjs";
 import { defineStore } from "pinia";
@@ -16,7 +14,10 @@ export const useChatMessageStore = defineStore("chat-message", () => {
   const chatModelStore = useChatModelStore();
   const messages = ref<IMessage[]>([]);
   const messageChangeCount = ref(0);
-  let client: LLMService;
+  // 安全获取最后一条消息，避免数组为空导致 undefined 问题
+  const getLastMessage = (): IMessage | undefined =>
+    messages.value.length ? messages.value[messages.value.length - 1] : undefined;
+  
 
   function ask(question: string, answer?: string) {
     if (question === "") {
@@ -42,7 +43,7 @@ export const useChatMessageStore = defineStore("chat-message", () => {
     getAIAnswer(answer ?? question);
   }
 
-  const getAIAnswer = (content: string) => {
+  const getAIAnswer = async (content: string) => {
     messages.value.push({
       from: "assistant",
       content: "",
@@ -52,63 +53,66 @@ export const useChatMessageStore = defineStore("chat-message", () => {
       loading: true,
       complete: false,
     });
-
-    if (MODEL_CONFIGS.enableMock) {
-      /* 模拟流式数据返回 */
-      setTimeout(async () => {
-        messages.value.at(-1).loading = false;
-        for (let i = 0; i < content.length; ) {
-          await new Promise((r) => setTimeout(r, 300 * Math.random()));
-          const step = Math.max(
-            5,
-            Math.floor(content.length / 20) * Math.random()
-          );
-          i += step;
-          messages.value[messages.value.length - 1].content = content.slice(
-            0,
-            i
-          );
-          messageChangeCount.value++;
-        }
-        chatHistoryStore.addHistory(
-          chatStatusStore.currentChatId,
-          dayjs().format("YYYY-MM-DD HH:mm"),
-          messages.value,
-          chatModelStore.currentModel
-        );
-      }, 1000);
-    } else {
-      const request = {
-        content,
-        streamOptions: {
-          onMessage: onMessageChange,
-          onComplete: onMessageComplete,
-        },
-        messages: messages.value,
-      };
-      if (!chatModelStore.currentModel) {
-        return;
-      }
-      client = new Client(
-        chatModelStore.currentModel.clientKey,
-        chatModelStore.currentModel.providerKey
-      ).client;
-      client.chat(request).then((res) => {
-        messages.value.at(-1).loading = false;
-        messages.value[messages.value.length - 1].content = res;
-        chatHistoryStore.addHistory(
-          chatStatusStore.currentChatId,
-          dayjs().format("YYYY-MM-DD HH:mm"),
-          messages.value,
-          chatModelStore.currentModel
-        );
+    try {
+      const apiBase = import.meta.env.VITE_API_BASE_URL || "";
+      const resp = await fetch(`${apiBase}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          input: content,
+          model:
+            chatModelStore.currentModelName ||
+            chatModelStore.currentModel?.modelName || "",
+        }),
       });
+
+      let answerText = "";
+      if (!resp.ok) {
+        answerText = `请求失败：${resp.status} ${resp.statusText}`;
+      } else {
+        const contentType = resp.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          try {
+            const data = await resp.json();
+            answerText =
+              (data && (data.output || data.answer || data.content)) ||
+              JSON.stringify(data);
+          } catch {
+            answerText = await resp.text();
+          }
+        } else {
+          answerText = await resp.text();
+        }
+      }
+
+      const assistantMsg = getLastMessage();
+      if (assistantMsg) {
+        assistantMsg.loading = false;
+        assistantMsg.content = answerText;
+        assistantMsg.complete = true;
+      }
+      chatHistoryStore.addHistory(
+        chatStatusStore.currentChatId,
+        dayjs().format("YYYY-MM-DD HH:mm"),
+        messages.value,
+        chatModelStore.currentModel
+      );
+      messageChangeCount.value++;
+    } catch (e) {
+      const assistantMsg = getLastMessage();
+      if (assistantMsg) {
+        assistantMsg.loading = false;
+        assistantMsg.content = "发生错误，请稍后再试。";
+        assistantMsg.complete = true;
+      }
+      messageChangeCount.value++;
     }
   };
 
   const onMessageChange = (msg: ChunkResponse) => {
-    messages.value.at(-1).loading = false;
-    const currentMessage = messages.value[messages.value.length - 1];
+    const currentMessage = getLastMessage();
+    if (!currentMessage) return;
+    currentMessage.loading = false;
     if (!currentMessage.startTime) {
       currentMessage.startTime = Date.now();
     }
@@ -121,8 +125,10 @@ export const useChatMessageStore = defineStore("chat-message", () => {
   };
 
   const onMessageComplete = () => {
-    messages.value.at(-1).loading = false;
-    messages.value.at(-1).complete = true;
+    const msg = getLastMessage();
+    if (!msg) return;
+    msg.loading = false;
+    msg.complete = true;
   };
 
   return { messages, messageChangeCount, ask };
