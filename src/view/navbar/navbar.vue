@@ -5,13 +5,13 @@
         <img :src="GlobalConfig.logoPath || Logo" />
         <span>{{ GlobalConfig.title || "MateChat" }}</span>
       </div>
-      <div class="dividing-line"></div>
-      <div class="chat-box">
-        <div class="chat-icon-box active">
-          <img src="/chat-icon.svg" />
-        </div>
-        <span>{{ $t("navbar.chat") }}</span>
-      </div>
+      <!-- <div class="dividing-line"></div> -->
+      <!-- <div class="chat-box"> -->
+      <!--   <div class="chat-icon-box active"> -->
+      <!--     <img src="/chat-icon.svg" /> -->
+      <!--   </div> -->
+      <!--   <span>{{ $t("navbar.chat") }}</span> -->
+      <!-- </div> -->
     </div>
     <div class="navbar-bottom">
       <SwitchLang v-if="!GlobalConfig.language" />

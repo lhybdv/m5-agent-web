@@ -22,7 +22,8 @@ import GlobalConfig from '@/global-config';
     padding: 8px 8px 8px 0;
     overflow: auto;
     box-sizing: border-box;
-    background: var(--mc-global-bg);
+    background: none;
+    background-color: var(--devui-base-bg);
   }
 .main-content {
   position: relative;
