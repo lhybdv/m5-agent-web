@@ -28,6 +28,7 @@ import GlobalConfig from '@/global-config';
 .main-content {
   position: relative;
   flex: 1;
+  min-width: 0; // allow main area to shrink with aside width
   display: flex;
   border-radius: 12px;
   overflow: auto;

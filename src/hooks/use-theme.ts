@@ -6,11 +6,13 @@ import {
   ThemeService,
   ColorHierarchyMap,
 } from "devui-theme";
-import { onMounted } from "vue";
+import { onBeforeUnmount, onMounted } from "vue";
 import type { IEffect, IColorDef } from "devui-theme";
 import { lightTheme, darkTheme, CustomThemeDataConfig } from "@/constant";
+import { ThemeEnum } from "@/global-config-types";
 
 let themeService: ThemeService | null = null;
+let prefersColorSchemeMedia: MediaQueryList | null = null;
 
 const THEME_MAP: Record<string, string> = {
   "infinity-theme": "light",
@@ -79,6 +81,19 @@ export function useTheme() {
     }
   };
 
+  const applySystemTheme = (isDark: boolean) => {
+    if (themeStore.theme === ThemeEnum.Custom) return;
+
+    themeStore.theme = isDark ? ThemeEnum.Dark : ThemeEnum.Light;
+    applyTheme(ID_TO_THEME[themeStore.theme]);
+  };
+
+  const handlePrefersColorSchemeChange = (
+    event: MediaQueryList | MediaQueryListEvent
+  ) => {
+    applySystemTheme(event.matches);
+  };
+
   const genCustomThemeData = (
     colorChanges: Array<IColorDef> | Record<string, string>,
     isDark = false,
@@ -119,6 +134,33 @@ export function useTheme() {
   onMounted(() => {
     themeChange();
     themeService?.eventBus?.add("themeChanged", themeChange);
+
+    if (typeof window !== "undefined" && window.matchMedia) {
+      prefersColorSchemeMedia =
+        window.matchMedia("(prefers-color-scheme: dark)");
+      handlePrefersColorSchemeChange(prefersColorSchemeMedia);
+      if (prefersColorSchemeMedia.addEventListener) {
+        prefersColorSchemeMedia.addEventListener(
+          "change",
+          handlePrefersColorSchemeChange
+        );
+      } else {
+        prefersColorSchemeMedia.addListener(handlePrefersColorSchemeChange);
+      }
+    }
+  });
+
+  onBeforeUnmount(() => {
+    if (prefersColorSchemeMedia) {
+      if (prefersColorSchemeMedia.removeEventListener) {
+        prefersColorSchemeMedia.removeEventListener(
+          "change",
+          handlePrefersColorSchemeChange
+        );
+      } else {
+        prefersColorSchemeMedia.removeListener(handlePrefersColorSchemeChange);
+      }
+    }
   });
 
   return {

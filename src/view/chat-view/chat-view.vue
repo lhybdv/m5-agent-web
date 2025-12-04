@@ -1,15 +1,15 @@
 <template>
   <div class="chat-view-wrapper">
     <div class="chat-view-container">
-      <NavbarTop />
+      <!-- <NavbarTop /> -->
       <ChatProcess v-if="chatStatusStore.startChat" />
       <Welcome v-else />
       <div class="new-convo-button">
         <div class="agent-knowledge">
           <ChatModel />
-          <ChatSetting />
-          <span class="agent-knowledge-dividing-line"></span>
-          <Knowledge />
+          <!-- <ChatSetting /> -->
+          <!-- <span class="agent-knowledge-dividing-line"></span> -->
+          <!-- <Knowledge /> -->
         </div>
         <d-popover
           :content="$t('newChat')"

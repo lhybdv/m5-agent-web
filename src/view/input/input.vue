@@ -2,32 +2,28 @@
   <div class="input-container">
     <McInput
       :value="inputValue"
-      :maxLength="2000"
       variant="borderless"
       @change="(e:string) => (inputValue = e)"
       @submit="onSubmit"
     >
       <template #extra>
         <div class="input-foot-wrapper">
-          <InputOnlineSearch />
-          <span class="input-foot-dividing-line"></span>
-          <InputAtModel @click="onModelClick" />
-          <d-popover
-            :content="$t('underDevelop')"
-            trigger="hover"
-            :position="['top']"
-            style="color: var(--devui-text)"
-          >
-            <div class="input-word-container">
-              <PromptsIcon />
-              <span>{{ $t("thesaurus") }}</span>
-            </div>
-          </d-popover>
-          <InputAppendix />
-          <span class="input-foot-dividing-line"></span>
-          <span class="input-foot-maxlength">
-            {{ inputValue.length }}/2000
-          </span>
+          <!-- <InputOnlineSearch /> -->
+          <!-- <span class="input-foot-dividing-line"></span> -->
+          <!-- <InputAtModel @click="onModelClick" /> -->
+          <!-- <d-popover -->
+          <!--   :content="$t('underDevelop')" -->
+          <!--   trigger="hover" -->
+          <!--   :position="['top']" -->
+          <!--   style="color: var(--devui-text)" -->
+          <!-- > -->
+          <!--   <div class="input-word-container"> -->
+          <!--     <PromptsIcon /> -->
+          <!--     <span>{{ $t("thesaurus") }}</span> -->
+          <!--   </div> -->
+          <!-- </d-popover> -->
+          <!-- <InputAppendix /> -->
+          <!-- <span class="input-foot-dividing-line"></span> -->
         </div>
       </template>
     </McInput>
