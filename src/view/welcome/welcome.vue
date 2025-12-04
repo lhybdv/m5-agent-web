@@ -34,7 +34,6 @@ import {
 } from '@/mock-data/mock-chat-view';
 import { useChatMessageStore, useLangStore } from '@/store';
 import { LangType } from '@/types';
-import Logo2X from '../../../public/logo2x.svg';
 
 const langStore = useLangStore();
 const chatMessageStore = useChatMessageStore();

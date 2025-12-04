@@ -1,29 +1,9 @@
 <template>
   <div class="input-container">
-    <McInput
-      :value="inputValue"
-      variant="borderless"
-      @change="(e:string) => (inputValue = e)"
-      @submit="onSubmit"
-    >
+    <McInput :value="inputValue" variant="borderless" sendBtnVariant="simple" @change="(e: string) => (inputValue = e)"
+      @submit="onSubmit">
       <template #extra>
         <div class="input-foot-wrapper">
-          <!-- <InputOnlineSearch /> -->
-          <!-- <span class="input-foot-dividing-line"></span> -->
-          <!-- <InputAtModel @click="onModelClick" /> -->
-          <!-- <d-popover -->
-          <!--   :content="$t('underDevelop')" -->
-          <!--   trigger="hover" -->
-          <!--   :position="['top']" -->
-          <!--   style="color: var(--devui-text)" -->
-          <!-- > -->
-          <!--   <div class="input-word-container"> -->
-          <!--     <PromptsIcon /> -->
-          <!--     <span>{{ $t("thesaurus") }}</span> -->
-          <!--   </div> -->
-          <!-- </d-popover> -->
-          <!-- <InputAppendix /> -->
-          <!-- <span class="input-foot-dividing-line"></span> -->
         </div>
       </template>
     </McInput>
@@ -36,11 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { PromptsIcon } from '@/components';
 import { useChatMessageStore, useChatModelStore } from '@/store';
-import { InputAppendix } from '@view/appendix';
-import { InputAtModel } from '@view/chat-model';
-import { InputOnlineSearch } from '@view/online-search';
 import { ref } from 'vue';
 
 const chatMessageStore = useChatMessageStore();
@@ -120,15 +96,21 @@ const onModelClick = () => {
       color: $devui-aide-text;
     }
   }
+
   :deep() {
     .mc-input-foot-left {
       overflow-x: auto;
       scrollbar-width: none;
-      &::-webkit-scrollbar { display: none; } /* WebKit browsers */
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* WebKit browsers */
     }
+
     .mc-button svg path {
-      transition: fill $devui-animation-duration-slow
-        $devui-animation-ease-in-out-smooth;
+      transition: fill $devui-animation-duration-slow $devui-animation-ease-in-out-smooth;
     }
   }
 
@@ -157,6 +139,7 @@ body[ui-theme="galaxy-theme"] {
       .mc-button:disabled {
         color: $devui-disabled-text;
         background-color: $devui-disabled-bg;
+
         svg path {
           fill: $devui-disabled-text;
         }
