@@ -12,6 +12,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AButton: typeof import('@arco-design/web-vue')['Button']
     Collapse: typeof import('./src/components/Collapse.vue')['default']
     CollapseArrow: typeof import('./src/components/CollapseArrow.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -21,6 +22,7 @@ declare module 'vue' {
 
 // For TSX support
 declare global {
+  const AButton: typeof import('@arco-design/web-vue')['Button']
   const Collapse: typeof import('./src/components/Collapse.vue')['default']
   const CollapseArrow: typeof import('./src/components/CollapseArrow.vue')['default']
   const RouterLink: typeof import('vue-router')['RouterLink']
