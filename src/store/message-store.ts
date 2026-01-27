@@ -54,19 +54,33 @@ export const useChatMessageStore = defineStore("chat-message", () => {
       complete: false,
     });
     try {
-      const apiBase = import.meta.env.VITE_API_BASE_URL || "";
-      const resp = await fetch(`${apiBase}/chat`, {
+      const apiBase = "http://10.28.16.105:8099";
+      const resp = await fetch(`${apiBase}/inner/api/llm-application/open/v3/application/invoke`, {
         method: "POST",
         headers: {
           Accept: "text/event-stream",
           "Content-Type": "application/json",
           "Cache-Control": "no-cache",
+          "Authorization": "Bearer LCJleHAiOjE3MDAwMDAwMDAsImVtYWlsIjoi",
+          "spac-id": 1426,
+          "user-id": 1812
         },
         body: JSON.stringify({
-          input: content,
-          model:
-            chatModelStore.currentModelName ||
-            chatModelStore.currentModel?.modelName || "",
+          app_id: "2011326404792381440",
+          stream: true,
+          send_log_event: false,
+          messages: [
+            {
+              role: "user",
+              content: [
+                {
+                  key: "input_text",
+                  value: content,
+                  type: "input",
+                },
+              ],
+            },
+          ],
         }),
       });
 
@@ -104,43 +118,37 @@ export const useChatMessageStore = defineStore("chat-message", () => {
           // 保留最后一个可能未完整的片段在 buffer 中
           buffer = parts.pop() || "";
           for (const part of parts) {
-            let deltaText = "";
-            let deltaReason = "";
             const trimmed = part.trim();
             if (trimmed.startsWith("data:")) {
               const dataPayload = trimmed.replace(/^data:\s*/, "").trim();
               try {
                 const obj = JSON.parse(dataPayload);
-                deltaText = obj.content || obj.output || obj.answer || "";
-                deltaReason = obj.reasoning_content || obj.think || "";
+                // 新API格式: choices[0].delta.content.msg
+                const delta = obj?.choices?.[0]?.delta;
+                const text = delta?.content?.msg || delta?.content || "";
+                if (text) {
+                  onMessageChange({ content: text });
+                }
               } catch {
-                deltaText = dataPayload;
+                // 非JSON格式，忽略
               }
-            } else {
-              // NDJSON 或纯文本
-              try {
-                const obj = JSON.parse(trimmed);
-                deltaText = obj.content || obj.output || obj.answer || "";
-                deltaReason = obj.reasoning_content || obj.think || "";
-              } catch {
-                deltaText = trimmed;
-              }
-            }
-
-            if (deltaText || deltaReason) {
-              onMessageChange({ content: deltaText, reasoning_content: deltaReason });
             }
           }
         }
         onMessageComplete();
       } else {
-        // 非流式，按原逻辑处理
+        // 非流式处理
         let answerText = "";
         if (contentType.includes("application/json")) {
           try {
             const data = await resp.json();
+            const choices = data?.choices || [];
             answerText =
-              (data && (data.output || data.answer || data.content)) ||
+              choices[0]?.delta?.content?.msg ||
+              choices[0]?.delta?.content ||
+              data?.output ||
+              data?.answer ||
+              data?.content ||
               JSON.stringify(data);
           } catch {
             answerText = await resp.text();

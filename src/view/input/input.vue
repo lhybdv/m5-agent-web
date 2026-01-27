@@ -31,20 +31,20 @@ chatMessageStore.$onAction(({ name }) => {
 });
 
 const onSubmit = (val: string) => {
-  // chatMessageStore.ask(val);
-  let target = "";
-  if (val.includes("面板") || val.includes("首页")) {
-    target = "";
-  } else if (val.includes("日志")) {
-    target = "logs";
-  } else if (val.includes("配置") || val.includes("设置")) {
-    target = "settings";
-  }
-  window.parent.postMessage({
-    action: 'invokeAppAction',
-    name: 'goto',
-    args: { to: target }
-  }, "*");
+  chatMessageStore.ask(val);
+  // let target = "";
+  // if (val.includes("面板") || val.includes("首页")) {
+  //   target = "";
+  // } else if (val.includes("日志")) {
+  //   target = "logs";
+  // } else if (val.includes("配置") || val.includes("设置")) {
+  //   target = "settings";
+  // }
+  // window.parent.postMessage({
+  //   action: 'invokeAppAction',
+  //   name: 'goto',
+  //   args: { to: target }
+  // }, "*");
 };
 
 const onModelClick = () => {
